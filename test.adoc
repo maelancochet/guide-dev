@@ -1,0 +1,749 @@
+= LiveTournois — Documentation Utilisateur
+:author: Équipe 1B2 — Tom Pottin, Maelan Cochet, Ryan Ferrandis, Clément Herrard
+:revnumber: 1.0
+:revdate: 2026-05-11
+:version-label: Version V0
+:project: SAE S2.01 / SAE S2.05
+:institution: IUT de Blagnac — BUT1 Informatique
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:source-highlighter: highlight.js
+
+// =========================================================
+// PAGE DE GARDE
+// =========================================================
+
+[discrete]
+== Documentation utilisateur — LiveTournois V0
+
+[cols="1,3", frame=none, grid=none]
+|===
+| *Projet* | LiveTournois — Application de gestion de tournois e-sport
+| *Version du document* | 1.0 (correspond à la version V0 de l'application)
+| *Date* | 11 mai 2026
+| *SAE* | S2.01 (Développement d'une application) et S2.05 (Gestion de projet)
+| *Formation* | BUT1 Informatique — IUT de Blagnac
+| *Équipe* | 1B2
+| *Membres* |
+- Tom Pottin (Chef de projet)
+- Maelan Cochet
+- Ryan Ferrandis
+- Clément Herrard
+| *Dépôt GitHub* | https://github.com/IUT-Blagnac/sae2-01-05-gpo-devapp-2026-g1b2
+|===
+
+[NOTE]
+====
+*Répartition de la rédaction de cette documentation* +
+- Introduction et présentation : _<à compléter>_
+- Installation et prérequis : _<à compléter>_
+- Fonctionnalités ORGANISATEUR : _<à compléter>_
+- Fonctionnalités ADMIN : _<à compléter>_
+- FAQ et dépannage : _<à compléter>_
+====
+
+<<<
+
+// =========================================================
+// INTRODUCTION
+// =========================================================
+
+== Introduction
+
+=== Présentation générale
+
+*LiveTournois* est une application de gestion de tournois de jeux vidéo destinée aux organisateurs d'événements e-sport.
+
+Elle permet de centraliser et de simplifier :
+
+* la gestion des tournois (création, modification, suppression, consultation) ;
+* la gestion du staff (organisateurs, arbitres) ;
+* la gestion des affectations du staff sur les tournois ;
+* la gestion des comptes utilisateurs (réservée aux administrateurs).
+
+L'application est conçue pour être utilisée dans un environnement encadré (IUT de Blagnac) avec un système de rôles permettant de contrôler les actions autorisées pour chaque utilisateur.
+
+[NOTE]
+Toutes les fonctionnalités de gestion reposent sur des opérations *CRUD* (Créer, Consulter, Modifier, Supprimer).
+
+=== Contexte du projet
+
+Cette application s'inscrit dans le cadre d'un projet universitaire (SAE S2.01 et SAE S2.05) à l'IUT de Blagnac.
+
+Elle répond à un besoin émergent de gestion de tournois de jeux vidéo dans le contexte de l'essor de l'e-sport en France, devenu un véritable phénomène de société.
+
+Le projet part d'une application existante (V0, fournie par l'enseignant) qui doit évoluer au fil des versions V1, V2 et V3.
+
+=== Données gérées par l'application (V0)
+
+L'application V0 permet de gérer les entités suivantes :
+
+[cols="1,3", options="header"]
+|===
+| Entité | Description
+| *Tournoi* | Événement avec un nom, une date, un jeu concerné et un format
+| *Staff* | Organisateurs et arbitres pouvant être affectés à un tournoi
+| *Affectation* | Lien entre un membre du staff et un tournoi (avec rôle)
+| *Utilisateur* | Compte d'accès à l'application avec un rôle (ORGANISATEUR ou ADMIN)
+|===
+
+// EMPLACEMENT POUR SCHEMA DES ENTITES
+// image::images/schema_entites.png[Schéma des entités gérées par l'application, width=500]
+
+=== Rôles utilisateurs
+
+L'application propose deux rôles avec des droits distincts :
+
+[cols="1,3", options="header"]
+|===
+| Rôle | Fonctionnalités accessibles
+| *ORGANISATEUR* |
+- Gestion des tournois +
+- Gestion du staff +
+- Gestion des affectations sur les tournois où il est affecté
+| *ADMIN* (hérite d'ORGANISATEUR) |
+- Toutes les fonctionnalités ORGANISATEUR +
+- Gestion des utilisateurs (création, modification, suppression de comptes)
+|===
+
+<<<
+
+// =========================================================
+// PREREQUIS
+// =========================================================
+
+== Prérequis
+
+Avant d'utiliser l'application, assurez-vous de disposer des éléments suivants :
+
+* *Java* installé sur le poste (version 11 minimum, version 21 recommandée)
+* *Système d'exploitation* : Windows (testé sous Windows 10 et 11)
+* *Accès au réseau de l'IUT* (connexion sur place ou via le VPN de l'IUT depuis l'extérieur)
+* *Accès à la base de données Oracle* fournie par l'IUT
+
+[WARNING]
+L'application dépend de la base de données Oracle hébergée à l'IUT. Elle ne pourra pas fonctionner si vous n'avez pas accès au réseau de l'IUT (directement ou via le VPN).
+
+=== Vérifier que Java est installé
+
+Ouvrez une invite de commande et tapez :
+
+[source,bash]
+----
+java -version
+----
+
+Si Java est installé correctement, vous verrez s'afficher la version installée (par exemple : `java version "21.0.1"`).
+
+// EMPLACEMENT POUR CAPTURE
+// image::images/verif_java.png[Vérification de la version Java, width=500]
+
+Si la commande n'est pas reconnue, installez Java à l'adresse suivante : https://www.oracle.com/java/technologies/downloads/
+
+<<<
+
+// =========================================================
+// INSTALLATION
+// =========================================================
+
+== Installation
+
+=== Fichiers fournis
+
+L'application est distribuée sous forme d'une archive ZIP nommée *"Jar exécutable V0 - Démo de la V0.zip"*.
+
+Cette archive est disponible sur la plateforme *WebEtud* dans la rubrique :
+
+[quote]
+S2.01 — Développement d'une application
+
+L'archive contient les éléments suivants :
+
+[cols="1,3", options="header"]
+|===
+| Fichier / Dossier | Description
+| `appLiveTournois/` | Dossier principal de l'application
+| `appLiveTournois/fichierPresent.jar` | Exécutable Java de l'application (V0)
+| `appLiveTournois/lib/` | Bibliothèques Java nécessaires (JavaFX, drivers Oracle…)
+| `README.txt` | Notes complémentaires sur le lancement
+|===
+
+// EMPLACEMENT POUR CAPTURE STRUCTURE DOSSIER
+// image::images/structure_archive.png[Contenu de l'archive après décompression, width=500]
+
+=== Téléchargement
+
+. Se connecter à *WebEtud* avec ses identifiants IUT
+. Aller dans la rubrique *S2.01 — Développement d'une application*
+. Télécharger le fichier *"Jar exécutable V0 - Démo de la V0.zip"*
+
+=== Décompression et lancement
+
+. Décompresser l'archive téléchargée dans le dossier de votre choix
+. Ouvrir le dossier `appLiveTournois`
+. Lancer l'application au choix par l'une des deux méthodes ci-dessous.
+
+==== Méthode graphique
+
+Double-cliquer sur le fichier `fichierPresent.jar`.
+
+// EMPLACEMENT POUR CAPTURE LANCEMENT GRAPHIQUE
+// image::images/lancement_graphique.png[Lancement par double-clic, width=500]
+
+==== Méthode ligne de commande
+
+Ouvrir une invite de commande dans le dossier `appLiveTournois`, puis taper :
+
+[source,bash]
+----
+java -jar fichierPresent.jar
+----
+
+[TIP]
+La méthode ligne de commande est recommandée en cas de problème : elle affiche les messages d'erreur dans le terminal, ce qui facilite le diagnostic.
+
+=== Problèmes possibles à l'installation
+
+[cols="2,3", options="header"]
+|===
+| Problème | Solution
+| Le double-clic n'ouvre rien | Java n'est probablement pas installé ou pas associé aux fichiers `.jar`. Utiliser la méthode ligne de commande pour diagnostiquer.
+| Message "java n'est pas reconnu…" | Java n'est pas installé ou pas dans le PATH système. Installer Java et redémarrer le poste.
+| Erreur "UnsupportedClassVersionError" | Votre version de Java est trop ancienne. Installer Java 11 minimum (21 recommandé).
+| L'écran d'accueil s'affiche mais la connexion échoue | Vérifier que vous êtes bien connecté au réseau IUT (ou via le VPN).
+|===
+
+<<<
+
+// =========================================================
+// PREMIERE UTILISATION
+// =========================================================
+
+== Première utilisation
+
+Au premier lancement, l'application s'ouvre sur un écran d'accueil non connecté.
+
+// EMPLACEMENT POUR CAPTURE ECRAN ACCUEIL
+// image::images/ecran_accueil.png[Écran d'accueil de LiveTournois, width=600]
+
+=== Se connecter
+
+Pour accéder aux fonctionnalités de l'application, vous devez vous identifier :
+
+. Ouvrir le menu *Compte*
+. Cliquer sur *Se connecter*
+. Saisir votre identifiant (pseudo) et votre mot de passe
+. Cliquer sur *Valider*
+
+// EMPLACEMENT POUR CAPTURE FENETRE CONNEXION (à annoter avec les zones : 1=champ pseudo, 2=champ mdp, 3=bouton valider)
+// image::images/connexion.png[Fenêtre de connexion (1: pseudo, 2: mot de passe, 3: valider), width=400]
+
+Une fois connecté, vous accédez aux fonctionnalités selon votre rôle (ORGANISATEUR ou ADMIN).
+
+==== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Pseudo | `admin1`
+| Mot de passe | `admin1`
+|===
+
+*Résultat attendu* : la fenêtre de connexion se ferme, le menu principal affiche les options correspondant au rôle ADMIN, et le nom de l'utilisateur connecté apparaît en haut à droite.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| "Identifiant ou mot de passe incorrect" | Vérifier la saisie (sensibilité à la casse). Vérifier que le compte existe.
+| "Impossible de se connecter à la base" | Vérifier la connexion au réseau IUT ou l'activation du VPN.
+| Aucun retour après le clic | L'application est probablement en train de tenter une connexion à la base. Patienter quelques secondes.
+|===
+
+=== Se déconnecter
+
+. Ouvrir le menu *Compte*
+. Cliquer sur *Se déconnecter*
+
+Vous revenez à l'écran d'accueil non connecté.
+
+<<<
+
+// =========================================================
+// FONCTIONNALITES ORGANISATEUR
+// =========================================================
+
+== Fonctionnalités ORGANISATEUR
+
+Cette section décrit l'ensemble des fonctionnalités accessibles aux utilisateurs ayant le rôle *ORGANISATEUR*.
+
+[NOTE]
+Les utilisateurs ayant le rôle *ADMIN* héritent de toutes ces fonctionnalités. Si vous êtes ADMIN, reportez-vous également à la section suivante.
+
+=== Gestion des tournois
+
+Permet de créer, modifier, supprimer et consulter les tournois.
+
+*Accès* : Menu *Tournois* → *Gestion des tournois*
+
+// EMPLACEMENT POUR CAPTURE ECRAN PRINCIPAL GESTION TOURNOIS (à annoter : 1=liste tournois, 2=boutons CRUD, 3=zone détails)
+// image::images/gestion_tournois.png[Écran de gestion des tournois, width=700]
+
+==== Consulter les tournois
+
+La liste de tous les tournois s'affiche à l'ouverture de l'écran. Pour voir les détails d'un tournoi, cliquer dessus dans la liste.
+
+==== Créer un tournoi
+
+. Cliquer sur le bouton *Nouveau tournoi*
+. Renseigner les informations demandées : nom, date, jeu, format
+. Cliquer sur *Valider*
+
+// EMPLACEMENT POUR CAPTURE FORMULAIRE CREATION TOURNOI
+// image::images/creation_tournoi.png[Formulaire de création d'un tournoi, width=500]
+
+===== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Nom | Coupe IUT Blagnac 2026
+| Date | 15/06/2026
+| Jeu | League of Legends
+| Format | 8 équipes — élimination directe
+|===
+
+*Résultat attendu* : le tournoi apparaît dans la liste des tournois.
+
+==== Modifier un tournoi
+
+. Sélectionner un tournoi dans la liste
+. Cliquer sur *Modifier*
+. Modifier les champs souhaités
+. Cliquer sur *Valider*
+
+==== Supprimer un tournoi
+
+. Sélectionner un tournoi dans la liste
+. Cliquer sur *Supprimer*
+. Confirmer la suppression dans la boîte de dialogue
+
+[WARNING]
+La suppression est définitive. Toutes les affectations de staff sur ce tournoi seront également supprimées.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| "Le nom est obligatoire" | Le champ nom est vide. Renseigner un nom.
+| "Date invalide" | Le format de date n'est pas respecté. Utiliser le format JJ/MM/AAAA.
+| "Un tournoi avec ce nom existe déjà" | Choisir un nom unique.
+| Suppression impossible | Le tournoi a peut-être des dépendances (équipes inscrites en V1+). Supprimer d'abord les dépendances.
+|===
+
+=== Gestion du staff
+
+Permet de créer, modifier, supprimer et consulter les membres du staff.
+
+*Accès* : Menu *Staff* → *Gestion du Staff*
+
+// EMPLACEMENT POUR CAPTURE GESTION STAFF
+// image::images/gestion_staff.png[Écran de gestion du staff, width=700]
+
+==== Consulter les membres du staff
+
+La liste des membres s'affiche à l'ouverture de l'écran.
+
+==== Ajouter un membre du staff
+
+. Cliquer sur *Nouveau staff*
+. Renseigner les informations demandées (nom, prénom, rôle, etc.)
+. Cliquer sur *Valider*
+
+===== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Nom | Dupont
+| Prénom | Jean
+| Rôle | Arbitre
+|===
+
+*Résultat attendu* : le membre apparaît dans la liste du staff et devient disponible pour être affecté à un tournoi.
+
+==== Modifier un membre du staff
+
+. Sélectionner un membre dans la liste
+. Cliquer sur *Modifier*
+. Modifier les champs souhaités
+. Cliquer sur *Valider*
+
+==== Supprimer un membre du staff
+
+. Sélectionner un membre dans la liste
+. Cliquer sur *Supprimer*
+. Confirmer la suppression
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| "Le nom est obligatoire" | Renseigner le nom du membre.
+| Suppression impossible | Le membre est affecté à un ou plusieurs tournois. Retirer d'abord ses affectations.
+|===
+
+=== Gestion des affectations
+
+Permet d'affecter un membre du staff à un tournoi, de modifier ou supprimer une affectation existante.
+
+*Accès* : Menu *Tournois* → *Gestion des tournois* → sélectionner un tournoi → *Ajouter un staff*
+
+// EMPLACEMENT POUR CAPTURE GESTION AFFECTATIONS
+// image::images/gestion_affectations.png[Écran d'affectation d'un membre du staff à un tournoi, width=700]
+
+==== Affecter un membre du staff à un tournoi
+
+. Ouvrir la *Gestion des tournois*
+. Sélectionner le tournoi concerné
+. Cliquer sur *Ajouter un staff*
+. Choisir un membre du staff dans la liste proposée
+. Renseigner les informations d'affectation (rôle sur ce tournoi, etc.)
+. Cliquer sur *Valider*
+
+===== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Tournoi | Coupe IUT Blagnac 2026
+| Staff | Jean Dupont
+| Rôle | Arbitre principal
+|===
+
+*Résultat attendu* : le membre apparaît désormais dans la liste des staffs affectés au tournoi.
+
+==== Modifier une affectation
+
+. Sélectionner une affectation dans la liste
+. Cliquer sur *Modifier*
+. Modifier les informations
+. Cliquer sur *Valider*
+
+==== Supprimer une affectation
+
+. Sélectionner une affectation dans la liste
+. Cliquer sur *Supprimer*
+. Confirmer la suppression
+
+[NOTE]
+La suppression d'une affectation ne supprime pas le membre du staff ni le tournoi : elle dissocie simplement les deux.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| "Ce membre est déjà affecté à ce tournoi" | Un membre ne peut être affecté qu'une seule fois à un même tournoi. Modifier l'affectation existante.
+| "Vous n'êtes pas affecté à ce tournoi" | Un ORGANISATEUR ne peut gérer les affectations que sur les tournois où il est lui-même affecté. Contacter un ADMIN.
+|===
+
+<<<
+
+// =========================================================
+// FONCTIONNALITES ADMIN
+// =========================================================
+
+== Fonctionnalités ADMIN
+
+Cette section décrit les fonctionnalités supplémentaires accessibles uniquement aux utilisateurs ayant le rôle *ADMIN*.
+
+[IMPORTANT]
+Le rôle ADMIN hérite de toutes les fonctionnalités ORGANISATEUR (voir section précédente).
+
+=== Gestion des utilisateurs
+
+Permet d'administrer les comptes utilisateurs de l'application (création, modification, suppression).
+
+*Accès* : Menu *Staff* → *Gestion des utilisateurs*
+
+// EMPLACEMENT POUR CAPTURE GESTION UTILISATEURS (à annoter : 1=liste users, 2=colonne rôle, 3=boutons CRUD)
+// image::images/gestion_utilisateurs.png[Écran de gestion des utilisateurs, width=700]
+
+==== Consulter la liste des utilisateurs
+
+La liste de tous les utilisateurs s'affiche à l'ouverture de l'écran, avec pour chacun son pseudo et son rôle (ORGANISATEUR ou ADMIN).
+
+==== Créer un utilisateur
+
+. Cliquer sur *Nouvel utilisateur*
+. Renseigner les informations : pseudo, mot de passe, rôle
+. Cliquer sur *Valider*
+
+===== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Pseudo | jdupont
+| Mot de passe | MotDePasse123
+| Rôle | ORGANISATEUR
+|===
+
+*Résultat attendu* : le nouvel utilisateur apparaît dans la liste et peut désormais se connecter à l'application avec ses identifiants.
+
+==== Modifier un utilisateur
+
+. Sélectionner un utilisateur dans la liste
+. Cliquer sur *Modifier*
+. Modifier les champs souhaités (mot de passe, rôle…)
+. Cliquer sur *Valider*
+
+==== Supprimer un utilisateur
+
+. Sélectionner un utilisateur dans la liste
+. Cliquer sur *Supprimer*
+. Confirmer la suppression
+
+[WARNING]
+La suppression d'un utilisateur est définitive. L'utilisateur ne pourra plus se connecter à l'application.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| "Ce pseudo est déjà utilisé" | Choisir un pseudo unique.
+| "Le mot de passe est trop court" | Respecter la longueur minimale du mot de passe.
+| Impossible de supprimer son propre compte | Un ADMIN ne peut pas supprimer son propre compte. Demander à un autre ADMIN.
+|===
+
+<<<
+
+// =========================================================
+// EXEMPLES D'UTILISATION
+// =========================================================
+
+== Exemples d'utilisation complets
+
+Cette section présente des scénarios d'utilisation complets de bout en bout, accompagnés de jeux d'essai et des résultats attendus.
+
+=== Scénario 1 : Organiser un nouveau tournoi (ORGANISATEUR)
+
+*Objectif* : créer un tournoi et y affecter un arbitre.
+
+==== Étapes
+
+. Se connecter en tant qu'ORGANISATEUR
+. Créer un nouveau tournoi
+. Créer un membre du staff (si nécessaire)
+. Affecter le membre du staff au tournoi
+
+==== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Donnée | Valeur
+| Compte de connexion | `orga1` / `orga1`
+| Nom du tournoi | Coupe IUT Blagnac 2026
+| Date | 15/06/2026
+| Jeu | League of Legends
+| Format | 8 équipes — élimination directe
+| Staff à créer | Jean Dupont (Arbitre)
+| Rôle dans l'affectation | Arbitre principal
+|===
+
+==== Résultat attendu
+
+* Le tournoi "Coupe IUT Blagnac 2026" apparaît dans la liste des tournois.
+* Le membre Jean Dupont apparaît dans la liste du staff.
+* Jean Dupont apparaît dans la liste des affectations du tournoi avec le rôle "Arbitre principal".
+
+// EMPLACEMENT POUR CAPTURE RECAPITULATIVE
+// image::images/scenario1_resultat.png[Résultat du scénario 1 — tournoi avec staff affecté, width=700]
+
+=== Scénario 2 : Créer un compte ORGANISATEUR pour un nouveau collègue (ADMIN)
+
+*Objectif* : un administrateur crée un compte pour un nouvel organisateur.
+
+==== Étapes
+
+. Se connecter en tant qu'ADMIN
+. Ouvrir la gestion des utilisateurs
+. Créer un nouveau compte avec le rôle ORGANISATEUR
+. Communiquer les identifiants au nouvel organisateur
+. Se déconnecter
+
+==== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Donnée | Valeur
+| Compte de connexion | `admin1` / `admin1`
+| Pseudo du nouvel utilisateur | mleblanc
+| Mot de passe initial | Bienvenue2026
+| Rôle | ORGANISATEUR
+|===
+
+==== Résultat attendu
+
+* Le compte `mleblanc` apparaît dans la liste des utilisateurs avec le rôle ORGANISATEUR.
+* Le nouvel utilisateur peut se connecter avec ces identifiants et accéder aux fonctionnalités ORGANISATEUR.
+
+<<<
+
+// =========================================================
+// FAQ
+// =========================================================
+
+== FAQ
+
+=== L'application ne se lance pas
+
+* Vérifier que Java est installé : `java -version` dans une invite de commande.
+* Vérifier la version : 11 minimum, 21 recommandée.
+* Lancer l'application en ligne de commande pour voir les messages d'erreur.
+
+=== Impossible de se connecter
+
+* Vérifier que les identifiants sont corrects (sensibilité à la casse).
+* Vérifier l'accès au réseau de l'IUT (connexion locale ou VPN actif).
+* Vérifier qu'aucun pare-feu ne bloque la connexion à la base Oracle.
+
+=== Certaines fonctionnalités sont indisponibles ou grisées
+
+* Vérifier votre rôle : la gestion des utilisateurs n'est accessible qu'aux ADMIN.
+* Vérifier que vous êtes bien connecté (votre nom doit apparaître en haut à droite).
+
+=== Je ne vois pas mes tournois
+
+* En tant qu'ORGANISATEUR, vous ne pouvez gérer les affectations que sur les tournois où vous êtes vous-même affecté. Demander à un ADMIN.
+
+=== Quel est mon rôle ?
+
+Une fois connecté, votre rôle est généralement affiché en haut à droite de la fenêtre, à côté de votre pseudo. Les menus accessibles dépendent également de votre rôle.
+
+<<<
+
+// =========================================================
+// DEPANNAGE
+// =========================================================
+
+== Dépannage
+
+=== Problème de lancement du fichier .jar
+
+[source,bash]
+----
+java -version
+----
+
+Cette commande permet de vérifier que Java est correctement installé et accessible.
+
+Si la version est inférieure à 11, mettre à jour Java :
+
+* Windows : https://www.oracle.com/java/technologies/downloads/
+
+=== Problème de connexion réseau
+
+* Vérifier la connexion au réseau de l'IUT (Wi-Fi `iut-blagnac` ou Ethernet sur place).
+* Si vous êtes à distance, activer le *VPN de l'IUT* (consulter la documentation IUT pour la configuration).
+* Tester la connectivité à la base Oracle :
+
+[source,bash]
+----
+ping oracle-iut.univ-tlse2.fr
+----
+
+[WARNING]
+L'application dépend de services internes à l'IUT. Elle ne peut pas fonctionner sur un réseau qui ne donne pas accès à la base Oracle.
+
+=== Problème de base de données
+
+* Vérifier que vos identifiants de connexion à l'application sont corrects.
+* Vérifier que la base Oracle est accessible (réseau IUT ou VPN).
+* En cas d'erreur "ORA-…", relever le code d'erreur précis et contacter l'équipe.
+
+=== Erreurs courantes au lancement
+
+[cols="2,3", options="header"]
+|===
+| Message d'erreur | Cause probable
+| `Could not find or load main class` | L'archive a mal été décompressée. Re-décompresser proprement.
+| `UnsupportedClassVersionError` | Version de Java trop ancienne (besoin de Java 11+).
+| `ORA-12541: TNS:no listener` | La base Oracle n'est pas accessible. Vérifier le réseau / VPN.
+| `ORA-01017: invalid username/password` | Identifiants de base incorrects. Vérifier la configuration.
+| `JavaFX runtime components are missing` | Bibliothèques JavaFX manquantes. Re-décompresser l'archive entière.
+|===
+
+<<<
+
+// =========================================================
+// SUPPORT
+// =========================================================
+
+== Support
+
+Pour toute question, problème ou suggestion concernant l'application, vous pouvez contacter l'équipe de développement :
+
+[cols="1,2", options="header"]
+|===
+| Membre | Contact
+| Tom Pottin (Chef de projet) | tom.pottin@etu.univ-tlse2.fr
+| Maelan Cochet | maelan.cochet@etu.univ-tlse2.fr
+| Ryan Ferrandis | ryan.ferrandis@etu.univ-tlse2.fr
+| Clément Herrard | clement.herrard@etu.univ-tlse2.fr
+|===
+
+*Code source* : https://github.com/IUT-Blagnac/sae2-01-05-gpo-devapp-2026-g1b2
+
+*Équipe* : 1B2
+
+<<<
+
+// =========================================================
+// MISE A JOUR
+// =========================================================
+
+== Mise à jour de l'application
+
+Pour mettre à jour LiveTournois vers une nouvelle version :
+
+. Télécharger la nouvelle archive sur WebEtud (même emplacement que pour V0)
+. Fermer l'application si elle est en cours d'exécution
+. Décompresser la nouvelle archive (dans un nouveau dossier de préférence)
+. Lancer l'application depuis le nouveau dossier
+
+[NOTE]
+La base de données est commune à toutes les versions : vos tournois, staffs et affectations existants restent accessibles après mise à jour.
+
+=== Historique des versions
+
+[cols="1,2,2", options="header"]
+|===
+| Version | Date | Nouveautés
+| V0 | Mai 2026 | Version initiale fournie : gestion des tournois, du staff, des affectations, des utilisateurs (ADMIN)
+| V1 | À venir | Gestion des équipes, des jeux, des joueurs (ADMIN), affectation d'un joueur à une équipe
+| V2 | À venir | Inscriptions aux tournois, génération de PDF (description tournoi, fiche joueur, liste joueurs)
+| V3 | À venir | Fonctionnalités avancées (à définir)
+|===
+
+<<<
+
+// =========================================================
+// LICENCE
+// =========================================================
+
+== Licence
+
+Ce projet est distribué sous *licence Apache 2.0*.
+
+Le texte complet de la licence est disponible à l'adresse : https://www.apache.org/licenses/LICENSE-2.0
+
+[discrete]
+=== Fin du document
