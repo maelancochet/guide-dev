@@ -1,0 +1,569 @@
+= Gestionnaire de Tournois (LiveTournois) — Documentation Utilisateur
+:author: Équipe 1B2 — Tom Pottin, Maelan Cochet, Ryan Ferrandis, Clément Herrard
+:revnumber: 1.0
+:revdate: 2026-05-11
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+
+// =========================================================
+// PAGE DE GARDE
+// =========================================================
+
+[discrete]
+== Documentation utilisateur — Version V0
+
+[cols="1,3", frame=none, grid=none]
+|===
+| *Projet* | LiveTournois — Application de gestion de tournois e-sport
+| *Application* | Gestionnaire de Tournois (V0)
+| *Version du document* | 1.0
+| *Date* | 11 mai 2026
+| *SAE* | S2.01 (Développement d'une application) et S2.05 (Gestion de projet)
+| *Formation* | BUT1 Informatique — IUT de Blagnac
+| *Équipe* | 1B2
+| *Membres* |
+- Tom Pottin (Chef de projet)
+- Maelan Cochet
+- Ryan Ferrandis
+- Clément Herrard
+| *Dépôt GitHub* | https://github.com/IUT-Blagnac/sae2-01-05-gpo-devapp-2026-g1b2
+|===
+
+[NOTE]
+====
+*Répartition de la rédaction* +
+Introduction et installation : _<à compléter>_ +
+Fonctionnalités ORGANISATEUR : _<à compléter>_ +
+Fonctionnalités ADMIN : _<à compléter>_ +
+FAQ et dépannage : _<à compléter>_
+====
+
+<<<
+
+// =========================================================
+// INTRODUCTION
+// =========================================================
+
+== Introduction
+
+=== Présentation générale
+
+*Gestionnaire de Tournois* (nom de projet : LiveTournois) est une application de gestion de tournois de jeux vidéo destinée aux organisateurs d'événements e-sport.
+
+Elle permet de :
+
+* gérer les tournois (création, modification, suppression, consultation) ;
+* gérer le staff (organisateurs, arbitres) ;
+* gérer les comptes utilisateurs (réservé aux administrateurs).
+
+L'application est conçue pour être utilisée dans un environnement encadré (IUT de Blagnac) avec un système de rôles contrôlant les actions autorisées.
+
+[NOTE]
+Toutes les fonctionnalités de gestion reposent sur des opérations *CRUD* (Créer, Consulter, Modifier, Supprimer).
+
+=== Contexte du projet
+
+Cette application s'inscrit dans le cadre d'un projet universitaire (SAE S2.01 et SAE S2.05) à l'IUT de Blagnac. Elle répond à un besoin émergent de gestion de tournois dans le contexte de l'essor de l'e-sport en France.
+
+Le projet part d'une application existante (V0, fournie par l'enseignant) qui doit évoluer au fil des versions V1, V2 et V3.
+
+=== Rôles utilisateurs
+
+[cols="1,3", options="header"]
+|===
+| Rôle | Fonctionnalités accessibles en V0
+| *ORGANISATEUR* | Gestion des tournois et du staff
+| *ADMIN* (hérite d'ORGANISATEUR) | Toutes les fonctionnalités ORGANISATEUR + gestion des utilisateurs
+|===
+
+<<<
+
+// =========================================================
+// PREREQUIS ET INSTALLATION
+// =========================================================
+
+== Prérequis et installation
+
+=== Prérequis
+
+* *Java* installé (version 11 minimum, version 21 recommandée)
+* *Système d'exploitation* : Windows (testé sur Windows 10 et 11)
+* *Accès au réseau de l'IUT* (sur place ou via VPN)
+* *Accès à la base de données Oracle* fournie par l'IUT
+
+[WARNING]
+L'application dépend de la base Oracle de l'IUT et ne fonctionne pas sans accès au réseau IUT.
+
+Vérifier l'installation de Java avec :
+
+[source,bash]
+----
+java -version
+----
+
+=== Téléchargement et installation
+
+. Se connecter à *WebEtud*, rubrique *S2.01 — Développement d'une application*
+. Télécharger *"Jar exécutable V0 - Démo de la V0.zip"*
+. Décompresser l'archive
+. Ouvrir le dossier `appLiveTournois`
+
+L'archive contient :
+
+[cols="1,3", options="header"]
+|===
+| Fichier / Dossier | Description
+| `fichierPresent.jar` | Exécutable Java de l'application
+| `lib/` | Bibliothèques nécessaires (JavaFX, driver Oracle)
+|===
+
+// image::images/structure_archive.png[Contenu de l'archive, width=500]
+
+=== Lancement
+
+Deux méthodes possibles :
+
+* *Graphique* : double-cliquer sur `fichierPresent.jar`
+* *Ligne de commande* (recommandée pour voir les erreurs) :
+
+[source,bash]
+----
+java -jar fichierPresent.jar
+----
+
+=== Problèmes possibles à l'installation
+
+[cols="2,3", options="header"]
+|===
+| Problème | Solution
+| Le double-clic n'ouvre rien | Java mal installé ou non associé aux `.jar`. Utiliser la ligne de commande.
+| `java n'est pas reconnu` | Java absent du PATH. Réinstaller Java et redémarrer.
+| `UnsupportedClassVersionError` | Version de Java trop ancienne. Installer Java 11+.
+| L'appli s'ouvre mais la connexion échoue | Vérifier le réseau IUT ou l'activation du VPN.
+|===
+
+<<<
+
+// =========================================================
+// PREMIERE UTILISATION
+// =========================================================
+
+== Première utilisation
+
+=== Interface principale
+
+Au lancement, l'application affiche la fenêtre *"Gestionnaire de Tournois"* avec un menu en haut comportant les rubriques : *Fichier*, *Compte*, *Tournois*, *Joueurs*, *Staff*.
+
+L'indicateur en haut à droite affiche l'état de connexion (ex : `Connecté : admin (ADMIN)`).
+
+// image::images/ecran_accueil.png[Écran principal de l'application, width=700]
+
+=== Se connecter
+
+. Ouvrir le menu *Compte*
+. Cliquer sur *Se connecter*
+. Saisir son pseudo et son mot de passe
+. Valider
+
+// image::images/connexion.png[Fenêtre de connexion, width=400]
+
+Une fois connecté, le pseudo et le rôle apparaissent en haut à droite.
+
+==== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Pseudo | admin
+| Mot de passe | _<voir comptes fournis par l'enseignant>_
+|===
+
+*Résultat attendu* : la fenêtre de connexion se ferme et `Connecté : admin (ADMIN)` apparaît en haut à droite.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| Identifiant ou mot de passe incorrect | Vérifier la saisie (sensibilité à la casse).
+| Erreur de connexion à la base | Vérifier le réseau IUT ou le VPN.
+|===
+
+=== Se déconnecter
+
+Menu *Compte* → *Se déconnecter*. Retour à l'écran non connecté.
+
+<<<
+
+// =========================================================
+// FONCTIONNALITES ORGANISATEUR
+// =========================================================
+
+== Fonctionnalités ORGANISATEUR
+
+Cette section décrit les fonctionnalités accessibles aux utilisateurs ayant le rôle *ORGANISATEUR*. Les utilisateurs *ADMIN* en héritent également.
+
+=== Gestion des tournois
+
+*Accès* : Menu *Tournois* → *Gestion des tournois*
+
+La liste de tous les tournois s'affiche. Trois boutons sont disponibles en haut : *Nouveau*, *Modifier*, *Supprimer*.
+
+// image::images/gestion_tournois.png[Écran de gestion des tournois, width=700]
+
+==== Consulter les tournois
+
+La liste s'affiche automatiquement à l'ouverture. Cliquer sur un tournoi pour le sélectionner.
+
+==== Créer un tournoi
+
+. Cliquer sur *Nouveau*
+. Renseigner les champs du formulaire (voir tableau ci-dessous)
+. Cliquer sur *Enregistrer*
+
+Les champs marqués d'un astérisque sont obligatoires :
+
+[cols="1,2", options="header"]
+|===
+| Champ | Description
+| Nom * | Nom du tournoi
+| Date début * | Date de début (JJ/MM/AAAA)
+| Date fin * | Date de fin (JJ/MM/AAAA)
+| Lieu * | Ville ou lieu de l'événement
+| Format * | Format du tournoi (ex : Round Robin + Playoffs)
+| Nombre équipes max * | Nombre maximal d'équipes
+| Statut * | État du tournoi (ex : En préparation)
+| Prix pool * | Montant total des prix
+| Jeu associé * | Jeu sélectionné dans la liste déroulante
+|===
+
+// image::images/edition_tournoi.png[Formulaire de création/modification d'un tournoi, width=500]
+
+===== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Nom | CS Masters
+| Date début | 10/07/2026
+| Date fin | 15/07/2026
+| Lieu | Lyon
+| Format | Round Robin + Playoffs
+| Nombre équipes max | 8
+| Statut | En préparation
+| Prix pool | 15000.0
+| Jeu associé | Counter-Strike 2 (Valve, 2023)
+|===
+
+*Résultat attendu* : le tournoi "CS Masters" apparaît dans la liste.
+
+==== Modifier un tournoi
+
+. Sélectionner un tournoi dans la liste
+. Cliquer sur *Modifier*
+. Modifier les champs souhaités
+. Cliquer sur *Enregistrer*
+
+==== Supprimer un tournoi
+
+. Sélectionner un tournoi
+. Cliquer sur *Supprimer*
+. Confirmer la suppression
+
+[WARNING]
+La suppression est définitive.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| Champ obligatoire vide | Renseigner tous les champs marqués `*`.
+| Date fin antérieure à date début | Vérifier la cohérence des dates.
+| Aucun tournoi sélectionné | Sélectionner un tournoi dans la liste avant de cliquer sur Modifier ou Supprimer.
+|===
+
+=== Gestion du staff
+
+*Accès* : Menu *Staff* → *Gestion du Staff*
+
+Permet de créer, modifier, supprimer et consulter les membres du staff (organisateurs, arbitres).
+
+// image::images/gestion_staff.png[Écran de gestion du staff, width=700]
+
+==== Opérations disponibles
+
+* *Consulter* : la liste s'affiche à l'ouverture
+* *Créer un membre* : cliquer sur le bouton de création, renseigner les informations, enregistrer
+* *Modifier un membre* : sélectionner dans la liste, cliquer sur Modifier, modifier les champs, enregistrer
+* *Supprimer un membre* : sélectionner dans la liste, cliquer sur Supprimer, confirmer
+
+==== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Nom | Dupont
+| Prénom | Jean
+| Rôle | Arbitre
+|===
+
+*Résultat attendu* : Jean Dupont apparaît dans la liste du staff.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| Champ obligatoire vide | Renseigner les champs requis.
+| Aucun membre sélectionné | Sélectionner un membre avant Modifier ou Supprimer.
+|===
+
+<<<
+
+// =========================================================
+// FONCTIONNALITES ADMIN
+// =========================================================
+
+== Fonctionnalités ADMIN
+
+Cette section décrit les fonctionnalités supplémentaires réservées aux utilisateurs ayant le rôle *ADMIN*.
+
+[IMPORTANT]
+Le rôle ADMIN hérite de toutes les fonctionnalités ORGANISATEUR.
+
+=== Gestion des utilisateurs
+
+*Accès* : Menu *Staff* → *Gestion des utilisateurs*
+
+La liste des utilisateurs s'affiche au format `pseudo (RÔLE, Statut)`, par exemple : `admin (ADMIN, Actif)`.
+
+Trois boutons disponibles : *Nouvel utilisateur*, *Modifier*, *Supprimer*, ainsi qu'une barre *Rechercher* pour filtrer la liste.
+
+// image::images/gestion_utilisateurs.png[Écran de gestion des utilisateurs, width=700]
+
+==== Consulter la liste
+
+La liste s'affiche à l'ouverture avec pour chaque utilisateur : pseudo, rôle (ORGANISATEUR ou ADMIN) et statut (Actif ou Inactif).
+
+==== Créer un utilisateur
+
+. Cliquer sur *Nouvel utilisateur*
+. Renseigner les champs du formulaire :
+
+[cols="1,2", options="header"]
+|===
+| Champ | Description
+| Pseudo * | Identifiant de connexion
+| Mot de passe * | Mot de passe initial
+| Rôle * | ORGANISATEUR ou ADMIN
+| Statut | Case à cocher "Actif" (activée par défaut)
+|===
+
+[start=3]
+. Cliquer sur *Valider*
+
+// image::images/edition_utilisateur.png[Formulaire de modification d'un utilisateur, width=500]
+
+===== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Champ | Valeur
+| Pseudo | jdupont
+| Mot de passe | MotDePasse123
+| Rôle | ORGANISATEUR
+| Statut | Actif
+|===
+
+*Résultat attendu* : `jdupont (ORGANISATEUR, Actif)` apparaît dans la liste.
+
+==== Modifier un utilisateur
+
+. Sélectionner un utilisateur
+. Cliquer sur *Modifier*
+. Modifier les champs (mot de passe, rôle, statut Actif/Inactif)
+. Cliquer sur *Valider*
+
+[TIP]
+Pour désactiver temporairement un compte sans le supprimer, décocher la case *Actif*. L'utilisateur ne pourra plus se connecter mais ses données sont conservées.
+
+==== Supprimer un utilisateur
+
+. Sélectionner un utilisateur
+. Cliquer sur *Supprimer*
+. Confirmer
+
+[WARNING]
+La suppression est définitive. Privilégier la désactivation (statut Inactif) pour conserver les données.
+
+==== Erreurs possibles
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Cause / Solution
+| Pseudo déjà utilisé | Choisir un pseudo unique.
+| Champ obligatoire vide | Renseigner les champs marqués `*`.
+| Impossible de supprimer son propre compte | Demander à un autre ADMIN.
+|===
+
+<<<
+
+// =========================================================
+// EXEMPLES D'UTILISATION
+// =========================================================
+
+== Exemples d'utilisation complets
+
+=== Scénario 1 : Créer un tournoi (ORGANISATEUR)
+
+*Objectif* : créer un nouveau tournoi de Counter-Strike 2.
+
+==== Étapes
+
+. Se connecter avec un compte ORGANISATEUR ou ADMIN
+. Menu *Tournois* → *Gestion des tournois*
+. Cliquer sur *Nouveau*
+. Renseigner les champs (voir jeu d'essai ci-dessous)
+. Cliquer sur *Enregistrer*
+
+==== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Donnée | Valeur
+| Compte de connexion | admin
+| Nom | CS Masters
+| Date début | 10/07/2026
+| Date fin | 15/07/2026
+| Lieu | Lyon
+| Format | Round Robin + Playoffs
+| Nombre équipes max | 8
+| Statut | En préparation
+| Prix pool | 15000.0
+| Jeu associé | Counter-Strike 2 (Valve, 2023)
+|===
+
+==== Résultat attendu
+
+Le tournoi "CS Masters" apparaît dans la liste des tournois.
+
+// image::images/scenario1_resultat.png[Résultat du scénario 1, width=700]
+
+=== Scénario 2 : Créer un compte ORGANISATEUR (ADMIN)
+
+*Objectif* : un administrateur crée un compte pour un nouvel organisateur.
+
+==== Étapes
+
+. Se connecter avec un compte ADMIN
+. Menu *Staff* → *Gestion des utilisateurs*
+. Cliquer sur *Nouvel utilisateur*
+. Renseigner les champs
+. Cliquer sur *Valider*
+. Communiquer les identifiants au nouvel utilisateur
+
+==== Jeu d'essai
+
+[cols="1,2", options="header"]
+|===
+| Donnée | Valeur
+| Compte de connexion | admin
+| Pseudo du nouveau compte | mleblanc
+| Mot de passe initial | Bienvenue2026
+| Rôle | ORGANISATEUR
+| Statut | Actif
+|===
+
+==== Résultat attendu
+
+`mleblanc (ORGANISATEUR, Actif)` apparaît dans la liste. Le nouvel utilisateur peut se connecter avec ces identifiants.
+
+<<<
+
+// =========================================================
+// FAQ ET DEPANNAGE
+// =========================================================
+
+== FAQ et dépannage
+
+=== L'application ne se lance pas
+
+* Vérifier l'installation de Java : `java -version`
+* Vérifier la version (Java 11 minimum, 21 recommandée)
+* Lancer en ligne de commande pour voir les erreurs
+
+=== Impossible de se connecter
+
+* Vérifier les identifiants (sensibilité à la casse)
+* Vérifier que le compte est *Actif* (statut visible dans la liste des utilisateurs)
+* Vérifier l'accès au réseau IUT (ou VPN actif)
+
+=== Le menu Joueurs ne contient rien (ou est inactif)
+
+C'est normal en V0 : la gestion des joueurs sera disponible à partir de la V1.
+
+=== Certaines fonctionnalités sont indisponibles
+
+* Vérifier votre rôle (visible en haut à droite : `Connecté : pseudo (ROLE)`)
+* La gestion des utilisateurs n'est accessible qu'aux ADMIN
+
+=== Erreurs courantes au lancement
+
+[cols="2,3", options="header"]
+|===
+| Message | Cause probable
+| `Could not find or load main class` | Archive mal décompressée. Re-décompresser.
+| `UnsupportedClassVersionError` | Java trop ancien. Installer Java 11+.
+| `ORA-12541: TNS:no listener` | Base Oracle inaccessible. Vérifier réseau/VPN.
+| `ORA-01017: invalid username/password` | Identifiants de base incorrects.
+| `JavaFX runtime components are missing` | Bibliothèques manquantes. Re-décompresser l'archive complète.
+|===
+
+<<<
+
+// =========================================================
+// SUPPORT, MISE A JOUR, LICENCE
+// =========================================================
+
+== Support
+
+[cols="1,2", options="header"]
+|===
+| Membre | Contact
+| Tom Pottin (Chef de projet) | tom.pottin@etu.univ-tlse2.fr
+| Maelan Cochet | maelan.cochet@etu.univ-tlse2.fr
+| Ryan Ferrandis | ryan.ferrandis@etu.univ-tlse2.fr
+| Clément Herrard | clement.herrard@etu.univ-tlse2.fr
+|===
+
+*Code source* : https://github.com/IUT-Blagnac/sae2-01-05-gpo-devapp-2026-g1b2 +
+*Équipe* : 1B2
+
+== Mise à jour
+
+. Télécharger la nouvelle archive sur WebEtud
+. Fermer l'application si elle est ouverte
+. Décompresser la nouvelle version
+. Lancer l'application depuis le nouveau dossier
+
+[NOTE]
+La base de données est commune à toutes les versions : vos tournois et utilisateurs existants restent accessibles.
+
+=== Historique des versions
+
+[cols="1,2,2", options="header"]
+|===
+| Version | Date | Contenu
+| V0 | Mai 2026 | Gestion des tournois, du staff et des utilisateurs (ADMIN)
+| V1 | À venir | Gestion des équipes, des jeux, des joueurs
+| V2 | À venir | Inscriptions aux tournois, génération de PDF
+| V3 | À venir | Fonctionnalités avancées (à définir)
+|===
+
+== Licence
+
+Ce projet est distribué sous *licence Apache 2.0*. +
+Texte complet : https://www.apache.org/licenses/LICENSE-2.0
