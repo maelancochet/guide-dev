@@ -18,8 +18,8 @@
 |===
 | *Projet* | LiveTournois — Application de gestion de tournois e-sport
 | *Application* | Gestionnaire de Tournois (V0)
-| *Version du document* | 1.0
-| *Date* | 11 mai 2026
+| *Version du document* | 0
+| *Date* | 13 mai 2026
 | *SAE* | S2.01 (Développement d'une application) et S2.05 (Gestion de projet)
 | *Formation* | BUT1 Informatique — IUT de Blagnac
 | *Équipe* | 1B2
